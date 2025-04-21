@@ -1,10 +1,12 @@
 from langchain_ollama import OllamaLLM
 from langchain_core.prompts import PromptTemplate
+from langchain_core.runnables import RunnableWithMessageHistory
+from langchain_core.chat_history import InMemoryChatMessageHistory
 
 
 class PokemonTrainer:
     """
-    An agent powered by an LLM to answer Pokémon-related questions using provided context.
+    An LLM-powered agent that can hold short Pokémon conversations.
     """
 
     def __init__(
@@ -18,17 +20,36 @@ class PokemonTrainer:
             "You are a helpful Pokédex assistant named Ziul.\n"
             "Wheneved asked, start with: Professor Ziul here! And after taht, answer the following question using only the context below.\n\n"
             "Context:\n{context}\n\n"
-            "Question:\n{question}"
+            "{chat_history}\nHuman: {question}\nAI:"
         )
 
-        self.chain = self.prompt | self.llm
+        self.memory = InMemoryChatMessageHistory()
 
-    def ask(self, question: str, context: str) -> str:
+        self.chain = RunnableWithMessageHistory(
+            self.prompt | self.llm,
+            input_messages_key="question",
+            history_messages_key="chat_history",
+            get_session_history=lambda session_id: self.memory,
+        )
+
+    def ask(
+        self,
+        context: str,
+        question: str,
+        session_id: str = "default",
+    ) -> str:
         """
-        Ask the PokémonTrainer a question using provided context.
+        Ask a question with memory context. A session_id can scope memory.
         """
         try:
-            return self.chain.invoke({"context": context, "question": question}).strip()
+            return self.chain.invoke(
+                {
+                    "context": context,
+                    "question": question,
+                },
+                config={"configurable": {"session_id": session_id}},
+            ).strip()
+
         except Exception as e:
-            print(f"❌ PokemonTrainer error: {e}")
-            return "[Error] LLM failed to respond."
+            print(f"Memory-enabled agent error: {e}")
+            return "[Error] LLM failed."
