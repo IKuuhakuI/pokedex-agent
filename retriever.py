@@ -55,17 +55,14 @@ def retrieve_context(query: str) -> str:
 
     flattened_entries = []
 
-    # Load Pokémon data
     with open(base_path / "sample_data.json", encoding="utf-8") as f:
         pokemon_data = json.load(f)
         flattened_entries += [build_pokemon_context(p) for p in pokemon_data]
 
-    # Load move data
     with open(base_path / "moves.json", encoding="utf-8") as f:
         moves_data = json.load(f)
         flattened_entries += [build_move_context(m) for m in moves_data]
 
-    # Vector similarity
     entry_embeddings = (
         embedding_model.encode(flattened_entries, convert_to_tensor=True).cpu().numpy()
     )
