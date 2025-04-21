@@ -30,17 +30,42 @@ def build_pokemon_context(entry: dict) -> str:
     return "\n".join(lines)
 
 
+def build_move_context(entry: dict) -> str:
+    """
+    Create a text description of a move entry.
+    """
+    name = entry.get("ename", "Unknown")
+    move_type = entry.get("type", "Unknown")
+    power = entry.get("power", "N/A")
+    accuracy = entry.get("accuracy", "N/A")
+    pp = entry.get("pp", "N/A")
+    category = entry.get("category", "Unknown")
+
+    return (
+        f"{name} is a {move_type}-type move ({category}). "
+        f"It has {power} power, {accuracy}% accuracy, and {pp} PP."
+    )
+
+
 def retrieve_context(query: str) -> str:
     """
-    Retrieve the top 3 most relevant Pokémon entries based on semantic similarity to the query.
+    Retrieve the top 3 most relevant Pokémon or move entries based on semantic similarity to the query.
     """
-    data_path = Path(__file__).parent / "data" / "sample_data.json"
+    base_path = Path(__file__).parent / "data"
 
-    with open(data_path, "r", encoding="utf-8") as file:
-        pokemon_data = json.load(file)
+    flattened_entries = []
 
-    flattened_entries = [build_pokemon_context(entry) for entry in pokemon_data]
+    # Load Pokémon data
+    with open(base_path / "sample_data.json", encoding="utf-8") as f:
+        pokemon_data = json.load(f)
+        flattened_entries += [build_pokemon_context(p) for p in pokemon_data]
 
+    # Load move data
+    with open(base_path / "moves.json", encoding="utf-8") as f:
+        moves_data = json.load(f)
+        flattened_entries += [build_move_context(m) for m in moves_data]
+
+    # Vector similarity
     entry_embeddings = (
         embedding_model.encode(flattened_entries, convert_to_tensor=True).cpu().numpy()
     )
@@ -48,8 +73,7 @@ def retrieve_context(query: str) -> str:
         embedding_model.encode([query], convert_to_tensor=True).cpu().numpy()
     )
 
-    similarity_scores = cosine_similarity(query_embedding, entry_embeddings)[0]
-    top_indices = np.argsort(similarity_scores)[::-1][:3]
+    scores = cosine_similarity(query_embedding, entry_embeddings)[0]
+    top_indices = np.argsort(scores)[::-1][:3]
 
-    top_matches = [flattened_entries[i] for i in top_indices]
-    return "\n\n".join(top_matches)
+    return "\n\n".join(flattened_entries[i] for i in top_indices)
