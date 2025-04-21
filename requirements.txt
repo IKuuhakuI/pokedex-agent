@@ -1,3 +1,8 @@
-openai
-python-dotenv
-sentence-transformers
+langchain==0.3.23
+langchain-community==0.3.21
+langchain-core==0.3.54
+langchain-ollama==0.3.2
+requests==2.32.3
+python-dotenv==1.1.0
+sentence-transformers==4.1.0
+scikit-learn==1.6.1
