@@ -80,5 +80,7 @@ ai-agent/
 
 ## 🧠 Ideas for Improvement
 
-- Web UI (e.g. Streamlit)
+- Web UI
 - Expose as an API (FastAPI or Flask)
+- A Graph based search for better entities and relationships context
+- The possibility of the user uploading his own data (pdf, url or any other), with, for example, a book with histories about pokemon. Based on that, I'd create my own data for context building.
