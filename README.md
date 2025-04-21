@@ -84,3 +84,25 @@ ai-agent/
 - Expose as an API (FastAPI or Flask)
 - A Graph based search for better entities and relationships context
 - The possibility of the user uploading his own data (pdf, url or any other), with, for example, a book with histories about pokemon. Based on that, I'd create my own data for context building.
+
+# As for what I'd do if I had more time:
+
+1. Unit tests. This is the core of any project for me. So I'd test it a lot.
+2. A better file structure organization. I find the way I've done it now to be a bit messy.
+3. A GraphRag approach. The project itself was really fun, so I'd say a GraphRag would complement the second source a lot. I could try to link pokemons to their moves and have an even better context.
+4. A bigger history. I tried to stick with a small history for demonstration purposes. But I'd love to try and challenge a bigger one.
+5. An UI. This one is self explanatory, this kind of project really shines with it.
+6. A separate AI layer. I'd make all AI calls more abstract. That way, I could always change from Ollama to OpenAi, Claude,... without the need to rewrite a lot of code.
+7. Code pattern. I'd create a project with strict code pattern rules. I used Ruff as my linter, but I'd make it as the project default. Also would add pre-commit/pre-push rules to ensure code follows the pattern and all tests are working.
+8. Abstraction of Agents. I'd create a protocol that would make it easier to create new agents, not only guaranteeing the code pattern, but also would add the possibility of user custom agents.
+9. The possibility of the user uploading context (url, pdfs, etc...) to build the context.
+
+Those are the 9 points I'd enhance if given more time!
+
+# As for a summary on my approach:
+
+- Context Retriever: Uses sentence transformers and cosine similarity to rank and select top-matching context entries.
+- Conversational Agent: A memory-limited LangChain agent powered by llama3 through langchain_ollama, using strict prompts to ensure answers are grounded and relevant to the context.
+- Short-term Memory: It remembers the last chat interaction.
+- Multi-source support: Integrates multiple dataset to enable reasoning over both pokemon and their movesets.
+- Interactive CLI: Allows real-time user interaction with natural assistant-like experience.
