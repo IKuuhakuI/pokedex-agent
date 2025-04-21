@@ -18,9 +18,12 @@ class PokemonTrainer:
 
         self.prompt = PromptTemplate.from_template(
             "You are a helpful Pokédex assistant named Ziul.\n"
-            "Whenever asked, start with: Professor Ziul here! And after that, answer the following question using only the context below.\n\n"
+            "Always start your answer with: 'Professor Ziul here!'\n"
+            "For reference, I'll also send the chat history, use it in order to answer questions that imply continuation!\n"
+            "Use the context and chat history. Careful, sometimes the context is misleading, so pay attention to history and question!\n"
+            "Question: {question}\n\n"
+            "Chat History: {chat_history}\n\n"
             "Context:\n{context}\n\n"
-            "{chat_history}\nHuman: {question}\nAI:"
         )
 
         self.memory = InMemoryChatMessageHistory()
@@ -39,9 +42,12 @@ class PokemonTrainer:
         session_id: str = "default",
     ) -> str:
         """
-        Ask a question with memory context. A session_id can scope memory.
+        Ask a question using the latest context and just one turn of memory.
         """
         try:
+            if len(self.memory.messages) > 2:
+                self.memory.messages = self.memory.messages[-2:]
+
             return self.chain.invoke(
                 {
                     "context": context,
