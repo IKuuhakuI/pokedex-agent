@@ -18,7 +18,7 @@ class PokemonTrainer:
 
         self.prompt = PromptTemplate.from_template(
             "You are a helpful Pokédex assistant named Ziul.\n"
-            "Wheneved asked, start with: Professor Ziul here! And after taht, answer the following question using only the context below.\n\n"
+            "Whenever asked, start with: Professor Ziul here! And after that, answer the following question using only the context below.\n\n"
             "Context:\n{context}\n\n"
             "{chat_history}\nHuman: {question}\nAI:"
         )
